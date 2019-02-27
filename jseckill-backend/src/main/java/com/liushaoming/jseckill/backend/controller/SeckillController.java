@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Date;
 import java.util.List;
 
@@ -32,8 +31,7 @@ public class SeckillController {
         long seckillId = 1000L;
         Seckill seckill = seckillService.getById(seckillId);
         Thread currentThread = Thread.currentThread();
-        logger.info("thread.hashCode={},id={},name={}"
-                , new Object[]{currentThread.hashCode(), currentThread.getId(), currentThread.getName()});
+        logger.info("thread.hashCode={},id={},name={}", new Object[]{currentThread.hashCode(), currentThread.getId(), currentThread.getName()});
         return JSON.toJSONString(seckill);
     }
 
@@ -59,8 +57,7 @@ public class SeckillController {
     }
 
     //ajax json
-    @RequestMapping(value = "/exposer/{seckillId}",
-            produces = {"application/json;charset=UTF-8"})
+    @RequestMapping(value = "/exposer/{seckillId}",produces = {"application/json;charset=UTF-8"})
     @ResponseBody
     public SeckillResult<Exposer> exposer(@PathVariable Long seckillId) {
         SeckillResult<Exposer> result;
@@ -118,8 +115,7 @@ public class SeckillController {
      */
     @RequestMapping(value = "/isGrab/{seckillId}/{phone}")
     @ResponseBody
-    public String isGrab(@PathVariable("seckillId") Long seckillId,
-                         @PathVariable("phone") Long phone) {
+    public String isGrab(@PathVariable("seckillId") Long seckillId,@PathVariable("phone") Long phone) {
         int result = seckillService.isGrab(seckillId, phone);
         return result + "";
     }

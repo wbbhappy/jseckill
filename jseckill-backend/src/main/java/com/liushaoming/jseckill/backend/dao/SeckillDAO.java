@@ -2,7 +2,6 @@ package com.liushaoming.jseckill.backend.dao;
 
 import com.liushaoming.jseckill.backend.entity.Seckill;
 import org.apache.ibatis.annotations.Param;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -42,5 +41,4 @@ public interface SeckillDAO {
      * @param paramMap
      */
     void killByProcedure(Map<String, Object> paramMap);
-
 }

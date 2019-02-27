@@ -1,11 +1,8 @@
 package com.liushaoming.jseckill.backend.mq;
 
-
 import com.alibaba.fastjson.JSON;
-import com.liushaoming.jseckill.backend.boot.AppContextHolder;
 import com.liushaoming.jseckill.backend.constant.MQConstant;
 import com.liushaoming.jseckill.backend.constant.RedisKey;
-import com.liushaoming.jseckill.backend.dto.SeckillExecution;
 import com.liushaoming.jseckill.backend.dto.SeckillMsgBody;
 import com.liushaoming.jseckill.backend.enums.AckAction;
 import com.liushaoming.jseckill.backend.enums.SeckillStateEnum;
@@ -17,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-
 import javax.annotation.Resource;
 import java.io.IOException;
 
@@ -27,10 +23,8 @@ public class MQConsumer {
 
     @Resource
     private SeckillService seckillService;
-
     @Resource(name = "mqConnectionReceive")
     private Connection mqConnectionReceive;
-
     @Resource(name = "initJedisPool")
     private JedisPool jedisPool;
 
@@ -43,9 +37,7 @@ public class MQConsumer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         MyDefaultConsumer myDefaultConsumer = new MyDefaultConsumer(channel);
-
         try {
             channel.basicConsume(MQConstant.QUEUE_NAME_SECKILL, false, myDefaultConsumer);
         } catch (IOException e) {
@@ -55,7 +47,6 @@ public class MQConsumer {
 
     private class MyDefaultConsumer extends DefaultConsumer {
         private Channel channel;
-
         /**
          * Constructs a new instance and records its association to the passed-in channel.
          *
@@ -65,27 +56,22 @@ public class MQConsumer {
             super(channel);
             this.channel = channel;
         }
-
-        @Override
-        public void handleDelivery(String consumerTag, Envelope envelope,
-                                   AMQP.BasicProperties properties, byte[] body)
+        public void handleDelivery(String consumerTag, Envelope envelope,AMQP.BasicProperties properties, byte[] body)
                 throws IOException {
-
             long threadId1 = Thread.currentThread().getId();
             logger.info("---receive_threadId_1={}", threadId1);
 
             String msg = new String(body, "UTF-8");
             logger.info("[mqReceive]  '" + msg + "'");
             SeckillMsgBody msgBody = JSON.parseObject(msg, SeckillMsgBody.class);
-
             AckAction ackAction = AckAction.ACCEPT;
             try {
                 // 这里演延时2秒，模式秒杀的耗时操作, 上线的时候需要注释掉
-//                try {
-//                    Thread.sleep(2000);
-//                } catch (InterruptedException e) {
-//                    logger.error(e.getMessage(), e);
-//                }
+                /*try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    logger.error(e.getMessage(), e);
+                }*/
                 seckillService.handleInRedis(msgBody.getSeckillId(), msgBody.getUserPhone());
                 ackAction = AckAction.ACCEPT;
             } catch (SeckillException seckillE) {
@@ -110,30 +96,23 @@ public class MQConsumer {
                             logger.error(ioE.getMessage(), ioE);
                             throw ioE;
                         }
-
                         Jedis jedis = jedisPool.getResource();
                         jedis.srem(RedisKey.QUEUE_PRE_SECKILL, msgBody.getSeckillId() + "@" + msgBody.getUserPhone());
                         jedis.close();
                         break;
-
                     case THROW:
                         logger.info("--LET_MQ_ACK REASON:SeckillStateEnum.SOLD_OUT,SeckillStateEnum.REPEAT_KILL");
                         channel.basicAck(envelope.getDeliveryTag(), false);
-
                         Jedis jedis1 = jedisPool.getResource();
                         jedis1.srem(RedisKey.QUEUE_PRE_SECKILL, msgBody.getSeckillId() + "@" + msgBody.getUserPhone());
                         jedis1.close();
-
                         break;
-
                     case RETRY:
                         logger.info("---->NACK--error_requeue!!!");
                         channel.basicNack(envelope.getDeliveryTag(), false, true);
                         break;
-
                 }
             }
         }
-
     }
 }

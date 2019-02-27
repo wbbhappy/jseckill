@@ -1,11 +1,10 @@
 package com.liushaoming.jseckill.backend.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.liushaoming.jseckill.backend.bean.ZKConfigBean;
 import com.liushaoming.jseckill.backend.constant.RedisKey;
 import com.liushaoming.jseckill.backend.constant.RedisKeyPrefix;
-import com.liushaoming.jseckill.backend.dao.SeckillDAO;
 import com.liushaoming.jseckill.backend.dao.PayOrderDAO;
+import com.liushaoming.jseckill.backend.dao.SeckillDAO;
 import com.liushaoming.jseckill.backend.dao.cache.RedisDAO;
 import com.liushaoming.jseckill.backend.distlock.CuratorClientManager;
 import com.liushaoming.jseckill.backend.dto.Exposer;
@@ -26,21 +25,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
-/**
- * @author liushaoming
- */
 @Service
 public class SeckillServiceImpl implements SeckillService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-
     //md5盐值字符串,用于混淆MD5
     private final String salt = "aksksks*&&^%%aaaa&^^%%*";
-
     //注入Service依赖
     @Autowired
     private SeckillDAO seckillDAO;
@@ -50,15 +43,12 @@ public class SeckillServiceImpl implements SeckillService {
     private RedisDAO redisDAO;
     @Autowired
     private AccessLimitService accessLimitService;
-
     @Autowired
     private MQProducer mqProducer;
     @Resource(name = "initJedisPool")
     private JedisPool jedisPool;
-
     @Resource
     private ZKConfigBean zkConfigBean;
-
     @Resource
     private CuratorClientManager curatorClientManager;
 
@@ -68,7 +58,6 @@ public class SeckillServiceImpl implements SeckillService {
      * 优先从缓存中获取数据
      * @return
      */
-    @Override
     public List<Seckill> getSeckillList() {
         List<Seckill> list = redisDAO.getAllGoods();
         if (list == null || list.size()<1) {
@@ -78,12 +67,10 @@ public class SeckillServiceImpl implements SeckillService {
         return list;
     }
 
-    @Override
     public Seckill getById(long seckillId) {
         return seckillDAO.queryById(seckillId);
     }
 
-    @Override
     public Exposer exportSeckillUrl(long seckillId) {
         // 优化点:缓存优化:超时的基础上维护一致性
         //1.访问Redis
@@ -98,7 +85,6 @@ public class SeckillServiceImpl implements SeckillService {
                 redisDAO.putSeckill(seckill);
             }
         }
-
         Date startTime = seckill.getStartTime();
         Date endTime = seckill.getEndTime();
         //系统当前时间
@@ -119,7 +105,6 @@ public class SeckillServiceImpl implements SeckillService {
         return md5;
     }
 
-    @Override
     /**
      * 执行秒杀
      */
@@ -148,13 +133,10 @@ public class SeckillServiceImpl implements SeckillService {
             logger.info("seckill_DATA_REWRITE!!!. seckillId={},userPhone={}", seckillId, userPhone);
             throw new SeckillException(SeckillStateEnum.DATA_REWRITE);
         }
-
         long threadId = Thread.currentThread().getId();
-
         Jedis jedis = jedisPool.getResource();
         String inventoryKey = RedisKeyPrefix.SECKILL_INVENTORY + seckillId;
         String boughtKey = RedisKeyPrefix.BOUGHT_USERS + seckillId;
-
         String inventoryStr = jedis.get(inventoryKey);
         int inventory = Integer.valueOf(inventoryStr);
         if (inventory <= 0) {
@@ -169,13 +151,11 @@ public class SeckillServiceImpl implements SeckillService {
             throw new SeckillException(SeckillStateEnum.REPEAT_KILL);
         } else {
             jedis.close();
-
             // 进入待秒杀队列，进行后续串行操作
             SeckillMsgBody msgBody = new SeckillMsgBody();
             msgBody.setSeckillId(seckillId);
             msgBody.setUserPhone(userPhone);
             mqProducer.send(msgBody);
-
             // 立即返回给客户端，说明秒杀成功了
             PayOrder payOrder = new PayOrder();
             payOrder.setUserPhone(userPhone);
@@ -192,13 +172,10 @@ public class SeckillServiceImpl implements SeckillService {
      * @param userPhone
      * @throws SeckillException
      */
-    @Override
     public void handleInRedis(long seckillId, long userPhone) throws SeckillException {
         Jedis jedis = jedisPool.getResource();
-
         String inventoryKey = RedisKeyPrefix.SECKILL_INVENTORY + seckillId;
         String boughtKey = RedisKeyPrefix.BOUGHT_USERS + seckillId;
-
         String inventoryStr = jedis.get(inventoryKey);
         int inventory = Integer.valueOf(inventoryStr);
         if (inventory <= 0) {
@@ -217,7 +194,6 @@ public class SeckillServiceImpl implements SeckillService {
     /**
      * 先插入秒杀记录再减库存
      */
-    @Override
     @Transactional
     public SeckillExecution updateInventory(long seckillId, long userPhone)
             throws SeckillException {
@@ -244,7 +220,6 @@ public class SeckillServiceImpl implements SeckillService {
                         validTime = true;
                     }
                 }
-
                 if (validTime) {
                     long oldVersion = currentSeckill.getVersion();
                     // update操作开始，表seckill的seckill_id等于seckillId的行被启用了行锁,   其他的事务无法update这一行， 可以update其他行
@@ -281,10 +256,8 @@ public class SeckillServiceImpl implements SeckillService {
      * @param userPhone
      * @return 0： 排队中; 1: 秒杀成功; 2： 秒杀失败
      */
-    @Override
     public int isGrab(long seckillId, long userPhone) {
         int result = 0 ;
-
         Jedis jedis = jedisPool.getResource();
         try {
             String boughtKey = RedisKeyPrefix.BOUGHT_USERS + seckillId;
@@ -293,7 +266,6 @@ public class SeckillServiceImpl implements SeckillService {
             logger.error(ex.getMessage(), ex);
             result = 0;
         }
-
         if (result == 0) {
             if (!jedis.sismember(RedisKey.QUEUE_PRE_SECKILL, seckillId + "@" + userPhone)) {
                 result =2;

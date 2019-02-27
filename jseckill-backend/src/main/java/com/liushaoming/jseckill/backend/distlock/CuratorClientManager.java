@@ -6,7 +6,6 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.Resource;
 
 @Component
@@ -20,7 +19,6 @@ public class CuratorClientManager {
     private ZKConfigBean zkConfigBean;
 
     private final ThreadLocal<CuratorFramework> localLock = new ThreadLocal<CuratorFramework>() {
-        @Override
         protected CuratorFramework initialValue() {
             return newClient();
         }

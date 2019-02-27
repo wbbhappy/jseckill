@@ -4,8 +4,6 @@ import com.liushaoming.jseckill.backend.dto.Exposer;
 import com.liushaoming.jseckill.backend.dto.SeckillExecution;
 import com.liushaoming.jseckill.backend.entity.Seckill;
 import com.liushaoming.jseckill.backend.exception.SeckillException;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 public interface SeckillService {

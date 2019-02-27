@@ -10,15 +10,12 @@ public class SeckillMsgBody implements Serializable {
     public long getSeckillId() {
         return seckillId;
     }
-
     public void setSeckillId(long seckillId) {
         this.seckillId = seckillId;
     }
-
     public long getUserPhone() {
         return userPhone;
     }
-
     public void setUserPhone(long userPhone) {
         this.userPhone = userPhone;
     }

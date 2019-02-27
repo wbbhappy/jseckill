@@ -1,5 +1,4 @@
 package com.liushaoming.jseckill.backend.enums;
-
 /**
  * 使用枚举表述常量数据字段
  * Created by liushaoming on 2019-01-14.
@@ -40,7 +39,6 @@ public enum SeckillStateEnum {
      */
     ACCESS_LIMIT(-5, "没抢到");
 
-
     private int state;
     private String stateInfo;
 
@@ -52,7 +50,6 @@ public enum SeckillStateEnum {
     public int getState() {
         return state;
     }
-
     public String getStateInfo() {
         return stateInfo;
     }

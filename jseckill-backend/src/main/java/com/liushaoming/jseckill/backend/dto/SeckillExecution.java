@@ -1,9 +1,7 @@
 package com.liushaoming.jseckill.backend.dto;
 
-
 import com.liushaoming.jseckill.backend.entity.PayOrder;
 import com.liushaoming.jseckill.backend.enums.SeckillStateEnum;
-
 /**
  * 封装秒杀执行后结果
  * Created by liushaoming on 2019-01-14.
@@ -11,17 +9,13 @@ import com.liushaoming.jseckill.backend.enums.SeckillStateEnum;
 public class SeckillExecution {
 
     private long seckillId;
-
     //秒杀执行结果状态
     private int state;
-
     //状态表示
     private String stateInfo;
-
     //秒杀成功对象
     private PayOrder payOrder;
 
-    @Override
     public String toString() {
         return "SeckillExecution{" +
                 "seckillId=" + seckillId +
@@ -47,31 +41,24 @@ public class SeckillExecution {
     public long getSeckillId() {
         return seckillId;
     }
-
     public void setSeckillId(long seckillId) {
         this.seckillId = seckillId;
     }
-
     public int getState() {
         return state;
     }
-
     public void setState(int state) {
         this.state = state;
     }
-
     public String getStateInfo() {
         return stateInfo;
     }
-
     public void setStateInfo(String stateInfo) {
         this.stateInfo = stateInfo;
     }
-
     public PayOrder getPayOrder() {
         return payOrder;
     }
-
     public void setPayOrder(PayOrder payOrder) {
         this.payOrder = payOrder;
     }

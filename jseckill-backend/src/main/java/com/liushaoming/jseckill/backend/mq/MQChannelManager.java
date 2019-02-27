@@ -6,10 +6,8 @@ import com.rabbitmq.client.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.Resource;
 import java.io.IOException;
-
 /**
  * 管理当前线程使用的Rabbitmq通道.
  * 使用了ThreadLocal
@@ -32,7 +30,6 @@ public class MQChannelManager {
                 return null;
             }
         }
-
     };
 
     /**

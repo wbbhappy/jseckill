@@ -2,7 +2,6 @@ package com.liushaoming.jseckill.backend.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-
 /**
  * Created by liushaoming on 15/10/5.
  * Goods to grab
@@ -21,60 +20,46 @@ public class Seckill implements Serializable {
     public long getSeckillId() {
         return seckillId;
     }
-
     public void setSeckillId(long seckillId) {
         this.seckillId = seckillId;
     }
-
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
-
     public int getInventory() {
         return inventory;
     }
-
     public void setInventory(int inventory) {
         this.inventory = inventory;
     }
-
     public Date getStartTime() {
         return startTime;
     }
-
     public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
-
     public Date getEndTime() {
         return endTime;
     }
-
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
     }
-
     public Date getCreateTime() {
         return createTime;
     }
-
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
-
     public long getVersion() {
         return version;
     }
-
     public void setVersion(long version) {
         this.version = version;
     }
 
-    @Override
     public String toString() {
         return "Seckill{" +
                 "seckillId=" + seckillId +

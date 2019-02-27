@@ -14,14 +14,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-
 import javax.annotation.Resource;
 import java.util.List;
 
 @Component
 public class InitTask implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(InitTask.class);
-
     @Resource(name = "initJedisPool")
     private JedisPool jedisPool;
     @Resource
@@ -29,7 +27,6 @@ public class InitTask implements CommandLineRunner {
     @Resource
     private MQConsumer mqConsumer;
 
-    @Override
     public void run(String... args) throws Exception {
         initRedis();
         logger.info("StartToConsumeMsg--->");
@@ -49,13 +46,10 @@ public class InitTask implements CommandLineRunner {
             logger.info("--FatalError!!! seckill_list_data is empty");
             return;
         }
-
         for (Seckill seckill : seckillList) {
             jedis.sadd(RedisKey.SECKILL_ID_SET, seckill.getSeckillId() + "");
-
             String inventoryKey = RedisKeyPrefix.SECKILL_INVENTORY + seckill.getSeckillId();
             jedis.set(inventoryKey, String.valueOf(seckill.getInventory()));
-
             String seckillGoodsKey = RedisKeyPrefix.SECKILL_GOODS + seckill.getSeckillId();
             byte[] goodsBytes = ProtostuffIOUtil.toByteArray(seckill, MyRuntimeSchema.getInstance().getGoodsRuntimeSchema(),
                     LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE));

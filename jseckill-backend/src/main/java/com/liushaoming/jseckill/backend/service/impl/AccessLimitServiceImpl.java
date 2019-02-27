@@ -19,7 +19,6 @@ public class AccessLimitServiceImpl implements AccessLimitService {
      * 尝试获取令牌
      * @return
      */
-    @Override
     public boolean tryAcquireSeckill() {
         return seckillRateLimiter.tryAcquire();
     }

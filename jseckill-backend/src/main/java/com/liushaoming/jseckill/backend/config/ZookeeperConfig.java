@@ -9,16 +9,12 @@ import org.springframework.context.annotation.Configuration;
 public class ZookeeperConfig {
     @Value("${zookeeper.lock-root}")
     private String lockRoot;
-
     @Value("${zookeeper.session-timeout}")
     private String sessionTimeout;
-
     @Value("${zookeeper.connect-str}")
     private String connectStr;
-
     @Value("${zookeeper.connect-timeout}")
     private String connectTimeout;
-
     @Value("${zookeeper.lock-acquire-timeout}")
     private String lockAcquireTimeout;
 

@@ -5,7 +5,6 @@ import com.liushaoming.jseckill.backend.constant.MQConstant;
 import com.liushaoming.jseckill.backend.constant.RedisKey;
 import com.liushaoming.jseckill.backend.dto.SeckillMsgBody;
 import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.ConfirmListener;
 import com.rabbitmq.client.MessageProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -24,7 +22,6 @@ public class MQProducer {
 
     @Autowired
     private MQChannelManager mqChannelManager;
-
     @Resource(name = "initJedisPool")
     private JedisPool jedisPool;
 
@@ -35,17 +32,13 @@ public class MQProducer {
         try {
             logger.info(" [mqSend] '" + msg + "'");
             channel.confirmSelect();
-
             channel.basicPublish("",
                     MQConstant.QUEUE_NAME_SECKILL,
                     MessageProperties.PERSISTENT_TEXT_PLAIN,
                     msg.getBytes());
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         boolean sendAcked = false;
         try {
             sendAcked = channel.waitForConfirms(100);
@@ -54,7 +47,6 @@ public class MQProducer {
         } catch (TimeoutException e) {
             e.printStackTrace();
         }
-
         logger.info("sendAcked={}", sendAcked);
         if (sendAcked) {
             Jedis jedis = jedisPool.getResource();

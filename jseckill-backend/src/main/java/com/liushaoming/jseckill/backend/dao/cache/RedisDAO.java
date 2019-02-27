@@ -7,14 +7,12 @@ import com.liushaoming.jseckill.backend.singleton.MyRuntimeSchema;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.runtime.RuntimeSchema;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +67,6 @@ public class RedisDAO {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
-
         return null;
     }
 
@@ -88,7 +85,6 @@ public class RedisDAO {
                 if (bytes != null) {
                     Seckill seckill = schema.newMessage();
                     ProtostuffIOUtil.mergeFrom(bytes, seckill, schema);
-
                     try {
                         // goodsKey获取到的库存量是初始值，并不是当前值，所有需要从RedisKeyPrefix.SECKILL_INVENTORY+seckillID
                         // 获取到的库存，再设置到结果中去
@@ -113,12 +109,9 @@ public class RedisDAO {
             logger.info("--FatalError!!! seckill_list_data is empty");
             return;
         }
-
         jedis.del(RedisKey.SECKILL_ID_SET);
-
         for (Seckill seckill : list) {
             jedis.sadd(RedisKey.SECKILL_ID_SET, seckill.getSeckillId() + "");
-
             String seckillGoodsKey = RedisKeyPrefix.SECKILL_GOODS + seckill.getSeckillId();
             byte[] goodsBytes = ProtostuffIOUtil.toByteArray(seckill, MyRuntimeSchema.getInstance().getGoodsRuntimeSchema(),
                     LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE));
@@ -127,5 +120,4 @@ public class RedisDAO {
         jedis.close();
         logger.info("数据库Goods数据同步到Redis完毕！");
     }
-
 }

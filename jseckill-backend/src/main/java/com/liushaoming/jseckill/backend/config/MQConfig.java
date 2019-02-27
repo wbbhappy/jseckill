@@ -1,21 +1,12 @@
 package com.liushaoming.jseckill.backend.config;
 
-import com.liushaoming.jseckill.backend.constant.MQConstant;
-import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.AcknowledgeMode;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
@@ -25,22 +16,16 @@ public class MQConfig {
 
     @Value("${rabbitmq.host}")
     private String host;
-
     @Value("${rabbitmq.port}")
     private String port;
-
     @Value("${rabbitmq.username}")
     private String username;
-
     @Value("${rabbitmq.password}")
     private String password;
-
     @Value("${rabbitmq.publisher-confirms}")
     private String ublisherConfirms;
-
     @Value("${rabbitmq.virtual-host}")
     private String virtualHost;
-
 
     @Bean("mqConnectionSeckill")
     public Connection mqConnectionSeckill() throws IOException, TimeoutException {

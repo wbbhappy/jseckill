@@ -2,11 +2,9 @@ package com.liushaoming.jseckill.backend.dao;
 
 import com.liushaoming.jseckill.backend.entity.PayOrder;
 import org.apache.ibatis.annotations.Param;
-
 import java.util.Date;
 
 public interface PayOrderDAO {
-
     /**
      * 插入购买明细,可过滤重复
      * @param seckillId
@@ -23,5 +21,4 @@ public interface PayOrderDAO {
      * @return
      */
     PayOrder queryByIdWithSeckill(@Param("seckillId") long seckillId, @Param("userPhone") long userPhone);
-
 }

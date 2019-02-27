@@ -8,7 +8,6 @@ public class MyRuntimeSchema {
 
     private RuntimeSchema<Seckill> goodsRuntimeSchema;
 
-
     public static MyRuntimeSchema getInstance() {
         return ourInstance;
     }
